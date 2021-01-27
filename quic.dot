@@ -1,0 +1,42 @@
+digraph g {
+
+	s0 [shape="circle" label="s0"];
+	s1 [shape="circle" label="s1"];
+	s2 [shape="circle" label="s2"];
+	s3 [shape="circle" label="s3"];
+	s4 [shape="circle" label="s4"];
+	s5 [shape="circle" label="s5"];
+	s6 [shape="circle" label="s6"];
+	s0 -> s0 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {}"];
+	s0 -> s1 [label="INITIAL(?,?)[ACK,PING] / {}"];
+	s0 -> s2 [label="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CRYPTO],HANDSHAKE(?,?)[CRYPTO],INITIAL(?,?)[ACK,CRYPTO],SHORT(?,?)[STREAM]}"];
+	s0 -> s0 [label="SHORT(?,?)[ACK,STREAM] / {}"];
+	s1 -> s1 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {}"];
+	s1 -> s1 [label="INITIAL(?,?)[ACK,PING] / {}"];
+	s1 -> s4 [label="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CONNECTION_CLOSE],HANDSHAKE(?,?)[CRYPTO],HANDSHAKE(?,?)[CRYPTO],INITIAL(?,?)[ACK,CONNECTION_CLOSE],INITIAL(?,?)[ACK,CRYPTO],SHORT(?,?)[CONNECTION_CLOSE],SHORT(?,?)[STREAM]}"];
+	s1 -> s1 [label="SHORT(?,?)[ACK,STREAM] / {}"];
+	s2 -> s3 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {SHORT(?,?)[CRYPTO],SHORT(?,?)[HANDSHAKE_DONE]}"];
+	s2 -> s2 [label="INITIAL(?,?)[ACK,PING] / {INITIAL(?,?)[ACK]}"];
+	s2 -> s4 [label="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CONNECTION_CLOSE],INITIAL(?,?)[ACK,CONNECTION_CLOSE],SHORT(?,?)[CONNECTION_CLOSE]}"];
+	s2 -> s6 [label="SHORT(?,?)[ACK,STREAM] / {}"];
+	s3 -> s3 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {}"];
+	s3 -> s3 [label="INITIAL(?,?)[ACK,PING] / {}"];
+	s3 -> s3 [label="INITIAL(?,?)[CRYPTO] / {}"];
+	s3 -> s5 [label="SHORT(?,?)[ACK,STREAM] / {SHORT(?,?)[ACK]}"];
+	s4 -> s4 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {}"];
+	s4 -> s4 [label="INITIAL(?,?)[ACK,PING] / {}"];
+	s4 -> s4 [label="INITIAL(?,?)[CRYPTO] / {}"];
+	s4 -> s4 [label="SHORT(?,?)[ACK,STREAM] / {}"];
+	s5 -> s5 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {}"];
+	s5 -> s5 [label="INITIAL(?,?)[ACK,PING] / {}"];
+	s5 -> s5 [label="INITIAL(?,?)[CRYPTO] / {}"];
+	s5 -> s5 [label="SHORT(?,?)[ACK,STREAM] / {SHORT(?,?)[ACK,STREAM]}"];
+	s6 -> s5 [label="HANDSHAKE(?,?)[ACK,CRYPTO] / {SHORT(?,?)[CRYPTO],SHORT(?,?)[HANDSHAKE_DONE]}"];
+	s6 -> s6 [label="INITIAL(?,?)[ACK,PING] / {INITIAL(?,?)[ACK]}"];
+	s6 -> s4 [label="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CONNECTION_CLOSE],INITIAL(?,?)[ACK,CONNECTION_CLOSE],SHORT(?,?)[CONNECTION_CLOSE]}"];
+	s6 -> s6 [label="SHORT(?,?)[ACK,STREAM] / {}"];
+
+__start0 [label="" shape="none" width="0" height="0"];
+__start0 -> s0;
+
+}

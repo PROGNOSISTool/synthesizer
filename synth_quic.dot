@@ -1,0 +1,33 @@
+digraph g {
+
+	s0 [shape="circle" label="s0"];
+	s1 [shape="circle" label="s1"];
+	s2 [shape="circle" label="s2"];
+	s3 [shape="circle" label="s3"];
+	s4 [shape="circle" label="s4"];
+	s5 [shape="circle" label="s5"];
+	s6 [shape="circle" label="s6"];
+	 s0 -> s0 [label ="HANDSHAKE(?,?)[ACK,CRYPTO] / {},r'0 == r0|o0 == 1 + r'0"];
+	 s0 -> s2 [label ="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CRYPTO],HANDSHAKE(?,?)[CRYPTO],INITIAL(?,?)[ACK,CRYPTO],SHORT(?,?)[STREAM]},r'0 == 1 + r0|o0 == 1 + r'0"];
+	 s0 -> s0 [label ="SHORT(?,?)[ACK,STREAM] / {},r'0 == r0|o0 == 1 + r'0"];
+	 s2 -> s3 [label ="HANDSHAKE(?,?)[ACK,CRYPTO] / {SHORT(?,?)[CRYPTO],SHORT(?,?)[HANDSHAKE_DONE]},r'0 == r0|o0 == r'0"];
+	 s2 -> s4 [label ="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CONNECTION_CLOSE],INITIAL(?,?)[ACK,CONNECTION_CLOSE],SHORT(?,?)[CONNECTION_CLOSE]},r'0 == r0|o0 == r'0"];
+	 s2 -> s6 [label ="SHORT(?,?)[ACK,STREAM] / {},r'0 == r0|o0 == r'0"];
+	 s3 -> s3 [label ="HANDSHAKE(?,?)[ACK,CRYPTO] / {},r'0 == r0|o0 == r'0"];
+	 s3 -> s3 [label ="INITIAL(?,?)[CRYPTO] / {},r'0 == r0|o0 == r'0"];
+	 s3 -> s5 [label ="SHORT(?,?)[ACK,STREAM] / {SHORT(?,?)[ACK]},r'0 == r0|o0 == r'0"];
+	 s4 -> s4 [label ="HANDSHAKE(?,?)[ACK,CRYPTO] / {},r'0 == r0|o0 == r'0"];
+	 s4 -> s4 [label ="INITIAL(?,?)[CRYPTO] / {},r'0 == r0|o0 == r'0"];
+	 s4 -> s4 [label ="SHORT(?,?)[ACK,STREAM] / {},r'0 == r0|o0 == r'0"];
+	 s5 -> s5 [label ="HANDSHAKE(?,?)[ACK,CRYPTO] / {},r'0 == r0|o0 == r'0"];
+	 s5 -> s5 [label ="INITIAL(?,?)[CRYPTO] / {},r'0 == r0|o0 == r'0"];
+	 s5 -> s5 [label ="SHORT(?,?)[ACK,STREAM] / {SHORT(?,?)[ACK,STREAM]},r'0 == r0|o0 == r'0"];
+	 s6 -> s5 [label ="HANDSHAKE(?,?)[ACK,CRYPTO] / {SHORT(?,?)[CRYPTO],SHORT(?,?)[HANDSHAKE_DONE]},r'0 == r0|o0 == r'0"];
+	 s6 -> s4 [label ="INITIAL(?,?)[CRYPTO] / {HANDSHAKE(?,?)[CONNECTION_CLOSE],INITIAL(?,?)[ACK,CONNECTION_CLOSE],SHORT(?,?)[CONNECTION_CLOSE]},r'0 == r0|o0 == r'0"];
+	 s6 -> s6 [label ="SHORT(?,?)[ACK,STREAM] / {},r'0 == r0|o0 == r'0"];
+
+
+__start0 [label="" shape="none" width="0" height="0"];
+__start0 -> s0;
+
+}

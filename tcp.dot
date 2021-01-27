@@ -1,0 +1,20 @@
+
+digraph g {
+
+	s0 [shape="circle" label="s0"];
+	s1 [shape="circle" label="s1"];
+	s2 [shape="circle" label="s2"];
+	s3 [shape="circle" label="s3"];
+	s0 -> s0 [label="ACK(?,?,?) / RST(?,?,?) | r'0 == r4|r'1 == 1 + r2|r'2 == r3|r'3 == 1 + r2|r'4 == r0|o0 == 1 + r'4|o1 == 1 + r'4"];
+	s0 -> s1 [label="SYN(?,?,?) / ACK+SYN(?,?,?) | r'0 == r4|r'1 == r0|r'2 == r3|r'3 == 1 + r0|r'4 == 1 + r1|o0 == 1 + r'2|o1 == r'1"];
+	s1 -> s2 [label="ACK(?,?,?) / NIL | r'0 == r2|r'1 == r0|r'2 == i1|r'3 == i0|r'4 == 1 + r3|o0 == r'0|o1 == r'0"];
+	s1 -> s0 [label="SYN(?,?,?) / ACK+RST(?,?,?) | r'0 == r1|r'1 == 1 + r2|r'2 == r0|r'3 == r2|r'4 == r1|o0 == r'3|o1 == r'4"];
+	s2 -> s2 [label="ACK(?,?,?) / NIL | r'0 == 1 + r0|r'1 == r1|r'2 == i1|r'3 == i0|r'4 == r4|o0 == r'1|o1 == r'1"];
+	s2 -> s3 [label="SYN(?,?,?) / ACK(?,?,?) | ir'0 == r0|r'1 == r2|r'2 == r1|r'3 == 1 + r4|r'4 == r1|o0 == r'2|o1 == r'3"];
+	s3 -> s2 [label="ACK(?,?,?) / NIL |r'0 == 1 + r2|r'1 == 1 + r3|r'2 == i1|r'3 == i0|r'4 == 1 + r0|o0 == r'2|o1 == r'2"];
+	s3 -> s2 [label="SYN(?,?,?) / NIL |r'0 == 1 + r0|r'1 == r4|r'2 == r1|r'3 == i1|r'4 == r0|o0 == r'4|o1 == r'2"];
+
+__start0 [label="" shape="none" width="0" height="0"];
+__start0 -> s0;
+
+}
