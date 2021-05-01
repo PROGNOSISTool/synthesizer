@@ -73,7 +73,7 @@ class QUICAbstraction:
 
 	def __init__(self):
 		self.automaton = 'quic.dot'
-		self.path = 'quic.json'
+		self.path = 'oracleTable.json'
 		self.inp_mask = lambda x: [x.get('seqNumber', -1), x.get('ackNumber', -1)]
 		self.out_mask = lambda x: [x.get('seqNumber', -1), x.get('ackNumber', -1)]
 		self.ignorable_inp = [True, True]
@@ -327,14 +327,13 @@ limit_in  = lambda x: []
 limit_out = lambda x: [ntz(cmm(x, 0, 'Message', 'Frames', -1, 'Message', 'StreamDataLimit'))] #, 'Message', 'StreamDataLimit')]
 
 
-abstraction = TCPAbstraction()
+abstraction = QUICAbstraction()
 edges = get_graph(abstraction.automaton)
 for edge in edges:
 	print(edge)
 
 ignorable_inp = [] # [True, True]
 ignorable_out = [False] #[False, False]
-#traces = [(True, ex) for ex in trace_and_mask(edges, "oracleTable.json", seqAckNumber, seqAckNumber)]
 traces = [(True, ex) for ex in abstraction.trace_and_mask(edges, abstraction.path)]
 print(traces)
 inc_edges = set()
@@ -356,6 +355,7 @@ nouts = 1
 for trace in traces:
 	print(">>", trace)
 	for ig_sum in counter():
+		ig_sum = 10
 		for nreg in counter():
 			print("ntraces", len(traces))
 			print(">>", ig_sum, nreg)
@@ -439,22 +439,4 @@ for trace in traces:
 				# print(v)
 				# break
 				print("unsat in {}...".format(nreg))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
