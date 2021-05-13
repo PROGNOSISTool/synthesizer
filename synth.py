@@ -469,5 +469,5 @@ class Synthesizer:
                                                 # break
                                                 print("unsat in {}...".format(nreg))
                 
-synth = Synthesizer("../config.yaml")
+synth = Synthesizer("config.yaml")
 synth.synthesize()
