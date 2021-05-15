@@ -10,6 +10,36 @@ import os
 import time
 import yaml
 
+class ProtocolAbstraction:
+
+	def __init__(self, auto, table):
+		"""
+		auto: the automato of the machine (list of triples of the form (from, label, to)
+		table: the file for the queries to be extracted from 
+		"""
+		pass
+
+        def embed(self, label, inputs, outputs):
+		"""
+		label: label to encode
+		inputs: an array of input vectors
+		outputs: an array of output vectors
+		"""
+		pass
+
+        def trace_and_mask(self, edges, whence):
+		"""
+		edges: the automato of the machine (list of triples of the form (from, label, to)
+		whence: the file for the table
+		"""
+		pass
+        
+	def evaluate(self, trace):
+		"""
+		trace: a trace to determine if is an actual member
+		"""
+		pass
+
 class TCPAbstraction:
         
         def __init__(self, auto, table):
