@@ -10,14 +10,14 @@ import os
 import time
 import yaml
 
+save_path = "/data/synth/"
+
 class ProtocolAbstraction:
 
-	def __init__(self, auto, table, adapter_ip, adapter_port):
+	def __init__(self, auto, table):
 		"""
 		auto: the automato of the machine (list of triples of the form (from, label, to)
-		table: the file for the queries to be extracted from
-		adapter_ip: IP/Name of the adapter
-		adapter_port: Port of the adapter
+		table: the file for the queries to be extracted from 
 		"""
 		pass
 
@@ -44,11 +44,9 @@ class ProtocolAbstraction:
 
 class TCPAbstraction:
 	
-	def __init__(self, auto, table, adapter_ip, adapter_port):
+	def __init__(self, auto, table):
 		self.automaton = auto 
-		self.path = table
-		self.adapter_ip = adapter_ip
-		self.adapter_port = adapter_port
+		self.path = table 
 		self.inp_mask = lambda x: [x.get('seqNumber', -1), x.get('ackNumber', -1)]
 		self.out_mask = lambda x: [x.get('seqNumber', -1), x.get('ackNumber', -1)]
 		self.ignorable_inp = [True, True]
@@ -68,33 +66,33 @@ class TCPAbstraction:
 	
 
 	def trace_and_mask(self, edges, whence):
-		with open(whence) as f:
-			d = json.load(f)
-			for key in d:
-				input_text = re.match('\\(\\[([^\\]]*)', key)
-				if not input_text:
-					continue
-				inp = input_text.groups()[0].split(', ')
-				state = 's0'
-				conc_trace = []
-				found = 0
-				for packet, v in enumerate(inp):
-					print(v)
-					for i, edge in enumerate(edges):
-						f, l, t = edge
-						print(l)
-						if state == f and l.startswith(v):
-							state = t
-							conc_inp = self.inp_mask(d[key]['concreteInputs'][packet])
-							conc_out = self.out_mask(d[key]['concreteOutputs'][packet])
-							conc_trace.append((conc_inp, i, conc_out))
-							found += 1
-							break
-				if found == len(inp):
-					yield conc_trace
-
+	      with open(whence) as f:
+		      d = json.load(f)
+		      for key in d:
+			      input_text = re.match('\\(\\[([^\\]]*)', key)
+			      if not input_text:
+				      continue
+			      inp = input_text.groups()[0].split(', ')
+			      state = 's0'
+			      conc_trace = []
+			      found = 0
+			      for packet, v in enumerate(inp):
+				      print(v)
+				      for i, edge in enumerate(edges):
+					      f, l, t = edge
+					      print(l)
+					      if state == f and l.startswith(v):
+						      state = t
+						      conc_inp = self.inp_mask(d[key]['concreteInputs'][packet])
+						      conc_out = self.out_mask(d[key]['concreteOutputs'][packet])
+						      conc_trace.append((conc_inp, i, conc_out))
+						      found += 1
+						      break
+			      if found == len(inp):
+				      yield conc_trace
+      
 	def evaluate(self, trace):
-		tn = telnetlib.Telnet(self.adapter_ip, self.adapter_port)
+		tn = telnetlib.Telnet("127.0.0.1", "3333")
 		try:
 			for inp, out in trace:
 				tn.write((inp+"\n").encode('ascii'))
@@ -108,11 +106,9 @@ class TCPAbstraction:
 	
 class QUICAbstraction():
 
-	def __init__(self, auto, table, adapter_ip, adapter_port):
+	def __init__(self, auto, table):
 		self.automaton = auto 
-		self.path = table
-		self.adapter_ip = adapter_ip
-		self.adapter_port = adapter_port
+		self.path = table 
 		self.inp_mask = lambda x: [x.get('seqNumber', -1), x.get('ackNumber', -1)]
 		self.out_mask = lambda x: [x.get('seqNumber', -1), x.get('ackNumber', -1)]
 
@@ -188,7 +184,7 @@ class QUICAbstraction():
 					yield conc_trace
 
 	def evaluate(self, trace):
-		tn = telnetlib.Telnet(self.adapter_ip, self.adapter_port)
+		tn = telnetlib.Telnet("127.0.0.1", "3333")
 		try:
 			for inp, out in trace:
 				tn.write((inp+"\n").encode('ascii'))
@@ -376,7 +372,7 @@ def zero_if_unevaluated(x):
 def waitFile(file):
 	while not os.path.isfile(file):
 		time.sleep(1)
-		print("Waiting for file '{}'...".format(file))
+		print("Waiting...")
 	return file 
 
 class Synthesizer:
@@ -385,7 +381,7 @@ class Synthesizer:
 		file = open(yamlPath, "r")
 		objt = yaml.full_load(file)
 		settings = objt['synthesizer']
-		for key in ['protocol', 'dot', 'oracle_table', 'adapter_ip', 'adapter_port']:
+		for key in ['protocol', 'dot', 'oracle_table']:
 			if key not in settings:
 				raise Exception("Expected {} under synthesizer in the config file".format(key))
 		proto = settings['protocol']
@@ -398,12 +394,10 @@ class Synthesizer:
 
 		self.dot_file = waitFile(settings['dot'])
 		self.oracle_table = waitFile(settings['oracle_table'])
-		self.adapter_ip = settings['adapter_ip']
-		self.adapter_port = settings['adapter_port']
 
 	def synthesize(self):#, 'Message', 'StreamDataLimit')]
 		
-		abstraction = self.abstraction_constructor(self.dot_file, self.oracle_table, self.adapter_ip, self.adapter_port)
+		abstraction = self.abstraction_constructor(self.dot_file, self.oracle_table)
 		edges = get_graph(abstraction.automaton)
 		for edge in edges:
 			print(edge)
@@ -446,6 +440,8 @@ class Synthesizer:
 						uinds, oinds = inds
 						out_igns = igns
 						m = s.model()
+						file = open(save_path+"{}_{}.dot".format(ig_sum, nreg), "w+")
+						file.write("digraph g {\n")
 						for edge in range(len(edges)):
 							if edge in ign_edges:
 								continue
@@ -473,9 +469,11 @@ class Synthesizer:
 								conj, _ = functions(out, registersp, inds)
 								edge_str.append(m.evaluate(conj))
 							f, l, t = edges[edge]
-							print('\t', f, '->', t, "[label =\"{}\"];".format(l + "," + '|'.join(map(str, edge_str))))
-						print(inits)
-						c = input()
+							file.write("".join(['\t', f, '->', t, "[label =\"{}\"];".format(l + "," + '|'.join(map(str, edge_str)))]))
+						file.write('__start0 [label="" shape="none" width="0" height="0"];\n__start0 -> s0;\n}')
+						file.write(str(inits))
+						file.close()
+						c = "y" #input()
 						if c == "y":
 							gtno = []
 							new_traces = []
@@ -510,5 +508,5 @@ class Synthesizer:
 						# break
 						print("unsat in {}...".format(nreg))
 		
-synth = Synthesizer("config.yaml")
+synth = Synthesizer("/code/config.yaml")
 synth.synthesize()
