@@ -479,7 +479,7 @@ class Synthesizer:
 							f, l, t = edges[edge]
 							file.write("".join(['\t', f, '->', t, "[label =\"{}\"];".format(l + "," + '|'.join(map(str, edge_str)))]))
 						file.write('__start0 [label="" shape="none" width="0" height="0"];\n__start0 -> s0;\n}')
-						file.write(str(inits))
+						#file.write(str(inits))
 						file.close()
 						c = "y" #input()
 						if c == "y":
